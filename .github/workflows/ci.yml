@@ -1,0 +1,35 @@
+# This repo has no app to build or test - it's just README.md, the file
+# GitHub shows on the profile page at github.com/landonkea. The one thing
+# worth checking automatically is that the markdown itself isn't broken:
+# a bad link, a stray character, anything that would render wrong on the
+# actual profile page. That's what this workflow does.
+name: CI
+
+# Run on every pull request, and on every push to main. A push straight to
+# main is basically the only way this repo changes, since it's a single
+# file most edits happen right in the GitHub UI.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  markdownlint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        # Pulls the repo's files onto the runner so the next step has
+        # something to check.
+
+      - name: Lint markdown files
+        uses: DavidAnson/markdownlint-cli2-action@v18
+        with:
+          globs: "**/*.md"
+        # markdownlint-cli2 reads .markdownlint.json from the repo root
+        # automatically, so the rules turned off there (line length, the
+        # first line needing to be a top-level heading, trailing
+        # punctuation in headings) apply here too. Those aren't mistakes in
+        # this README, they're just how it's written, so there's no reason
+        # to fail CI over them.
